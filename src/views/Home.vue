@@ -8,7 +8,7 @@
       <div class="container">
         <div class="navbar-brand">
           <a class="navbar-item">
-            <img src="@/assets/blogo.png" alt="Logo">
+            <img src="@/assets/clogo.png" alt="Logo">
           </a>
           <span class="navbar-burger burger" data-target="navbarMenuHeroA">
             <span></span>
@@ -45,14 +45,15 @@
   <div class="hero-body">
     <div class="container ">
       <div class="columns">
-      <div class="column is-two-thirds"></div>
-        <div class="column is-one-third has-text-left">
-      <h1 class="title">
+        <div class="column is-one-third has-text-left notification is-primary" style="padding:40px;">
+      <div class="title">
         Manage your court bookings easily. 
-      </h1>
-      <h2 class="subtitle">
+      </div>
+      <div class="subtitle">
+        <br>
         Court11 handles bookings and payments for tennis and squash clubs.
-      </h2>
+      </div>
+      
      </div>
       </div>
       </div>
@@ -116,7 +117,7 @@ export default {
 </script>
 <style scoped>
 .court-img{   
-  background:url('../assets/main.jpg') bottom left;
+  background:url('../assets/court2.jpg') bottom left;
   background-size:cover;
   padding:20px;
 }
