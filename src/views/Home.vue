@@ -21,8 +21,8 @@
             <a class="navbar-item is-active">
               Home
             </a>
-            <a class="navbar-item">
-              Examples
+            <a class="navbar-item" @click="$router.push('/login')">
+              Login 
             </a>
             <a class="navbar-item">
               Documentation
@@ -106,13 +106,9 @@
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'home',
-  components: {
-    HelloWorld
-  }
+  name: 'home'
 }
 </script>
 <style scoped>
