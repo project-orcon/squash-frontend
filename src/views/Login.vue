@@ -114,8 +114,8 @@ export default {
      let data= { "user": {"email": this.login.email, "password": this.login.password}}
      this.$http.post(this.$baseUrl+'/login',data,{headers: headers}).then(response => {
         localStorage.setItem('token', response.headers.authorization);
-
-         console.log(response.headers)
+        this.$router.push('/dashboard')
+         
      })
     .catch((error) => {
       //check if got a response from the server
