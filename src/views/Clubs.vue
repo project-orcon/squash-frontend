@@ -45,7 +45,7 @@
                             <div class="card-content">
                                 <div class="content has-text-left">
                     
-                                {{item.description}}{{item.id}}
+                                {{item.description}}
 
                                 <div class="has-text-right">
                                     <a class="button is-primary" @click="edit(index)">
@@ -61,7 +61,10 @@
                         </div>
                     </div>
                 </section>
-
+                <section class="has-text-right">
+                    <a class="button is-success" @click="showCreate=true">Create new</a>
+                </section>
+<!-- start edit modal -->
   <div class="modal has-text-left" :class="{'is-active': showEdit}">
   <div class="modal-background"></div>
   <div class="modal-card">
@@ -90,7 +93,38 @@
     </footer>
   </div>
 </div>
+<!-- end edit modal -->
+<!-- create new modal -->
+<div class="modal has-text-left" :class="{'is-active': showCreate}">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Create new club</p>
+      <button class="delete" aria-label="close" @click="showCreate=false"></button>
+    </header>
+    <section class="modal-card-body">
+        <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control">
+                            <input class="input" type="text" placeholder="Club Name" v-model="createClub.name">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                           <textarea class="textarea" placeholder="Club Description" v-model="createClub.description"></textarea>
+                        </div>
+                    </div>
+                    
+    </section>
+    <footer class="modal-card-foot" >
+      <button class="button is-success" @click="add()" :class="{'is-loading':loading}">Create</button>
+      <button class="button" @click="showCreate=false" >Cancel</button>
+    </footer>
+  </div>
+</div>
 
+<!-- end create new modal -->
                 
                 </div>
             </div>
@@ -105,34 +139,65 @@ export default {
   data() { return {
       clubs:[],
       showEdit:false, //toggles edit modal
+      showCreate:false, //toggles create modal
       currentClub:{}, //current club selected to be edited. 
+      createClub:{},//new club to be created.
+      currentIndex:0, //index used for editing clubs
       notificationActive:false,
-      loading:false
+      loading:false,
     }
   },
   mounted() {
       this.getClubs();
   },
   methods: {
-      edit(id){
-          this.currentClub=this.clubs[id];
-          this.showEdit=true;
-          console.log(this.currentClub);
+      add() {
+        
+        this.loading=true;
+        let data= {"club": {
+            "name": this.createClub.name,
+            "description": this.createClub.description,
+        }}
+
+        this.$http.post(this.$baseUrl+"/owner/clubs/",data,{headers: this.$headers}).then(response => {
+        this.showCreate=false;
+        this.notificationText="Successfully created new club. "
+        this.notificationActive=true;
+        this.loading=false;
+        this.clubs.push(this.createClub);
+
+
+        })
+        .catch((error) => {
+            this.loading=false;
+            this.handleError(error);
+        });
       },
+
+      //displays edit modal
+      edit(id){
+          this.currentClub=JSON.parse(JSON.stringify(this.clubs[id])); //clone object for editing
+          this.showEdit=true;
+          this.currentIndex=id;
+          
+      },
+
+      //saves edit modal details
       saveEdit(){
         
-        this.loading==true;
+        this.loading=true;
+        
         let data= {"club": {
             "name": this.currentClub.name,
             "description": this.currentClub.description,
         }}
 
-        console.log(data);
         this.$http.put(this.$baseUrl+"/owner/clubs/"+this.currentClub.id,data,{headers: this.$headers}).then(response => {
         this.showEdit=false;
         this.notificationText="Successfully saved club details. "
         this.notificationActive=true;
         
+        this.$set(this.clubs, this.currentIndex, this.currentClub)
         this.loading=false;
         })
         .catch((error) => {
@@ -151,18 +216,10 @@ export default {
      this.$http.get(this.$baseUrl+'/owner/clubs',{headers: headers}).then(response => {
 
          this.clubs=response.data;
-         console.log(this.clubs)
      })
     .catch((error) => {
       //check if got a response from the server
-      if (!error.response){
-        this.errorHeader="Unable to connect to server."
-        return;
-      }
-      if(error.response.status==401){
-          this.$router.push('/login')
-      }
-        this.errorHeader=error.response.message;
+       this.handleError(error);
       });
         
       
